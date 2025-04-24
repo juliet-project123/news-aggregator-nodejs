@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>News App</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="container">
+    <h1>📰 Latest News</h1>
+    <form id="newsForm">
+      <select id="country">
+        <option value="in">India</option>
+        <option value="us">USA</option>
+        <option value="gb">UK</option>
+      </select>
+      <select id="category">
+        <option value="technology">Technology</option>
+        <option value="sports">Sports</option>
+        <option value="health">Health</option>
+      </select>
+      <button type="submit">Search News</button>
+    </form>
+    <div id="newsList"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('newsForm');
+    const newsList = document.getElementById('newsList');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const country = document.getElementById('country').value;
+      const category = document.getElementById('category').value;
+
+      const res = await fetch(/news?country=${country}&category=${category});
+      const data = await res.json();
+
+      newsList.innerHTML = '';
+      data.forEach(article => {
+        const div = document.createElement('div');
+        div.className = 'news-item';
+        div.innerHTML = `
+          <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
+          <p>${article.description || ''}</p>
+        `;
+        newsList.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>
