@@ -1,12 +1,22 @@
 {
-  "name": "news-app",
+  "name": "node-express-api",
+  "description": "Simple api sample in Node",
   "version": "1.0.0",
+  "private": true,
   "main": "index.cjs",
+  "type": "module",
   "scripts": {
+    "dev": "nodemon index.js",
     "start": "node index.cjs"
   },
+  "author": "Google LLC",
+  "license": "Apache-2.0",
   "dependencies": {
-    "express": "^4.18.2",
-    "axios": "^1.6.0"
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
