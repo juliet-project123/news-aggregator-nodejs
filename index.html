@@ -1,53 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>News App</title>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #newsList {
+            display: grid;
+            gap: 20px;
+        }
+        .news-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .news-item h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .news-item p {
+            color: #555;
+            margin-bottom: 0;
+        }
+        @media (max-width: 600px) {
+            form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📰 Latest News</h1>
-    <form id="newsForm">
-      <select id="country">
-        <option value="in">India</option>
-        <option value="us">USA</option>
-        <option value="gb">UK</option>
-      </select>
-      <select id="category">
-        <option value="technology">Technology</option>
-        <option value="sports">Sports</option>
-        <option value="health">Health</option>
-      </select>
-      <button type="submit">Search News</button>
-    </form>
-    <div id="newsList"></div>
-  </div>
+    <div class="container">
+        <h1>📰 Latest News</h1>
+        <form id="newsForm">
+            <select id="country">
+                <option value="in">India</option>
+                <option value="us">USA</option>
+                <option value="gb">UK</option>
+            </select>
+            <select id="category">
+                <option value="technology">Technology</option>
+                <option value="sports">Sports</option>
+                <option value="health">Health</option>
+            </select>
+            <button type="submit">Search News</button>
+        </form>
+        <div id="newsList"></div>
+    </div>
+    <script>
+        const form = document.getElementById('newsForm');
+        const newsList = document.getElementById('newsList');
 
-  <script>
-    const form = document.getElementById('newsForm');
-    const newsList = document.getElementById('newsList');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const country = document.getElementById('country').value;
+            const category = document.getElementById('category').value;           
+            newsList.innerHTML = '<p>Loading...</p>';
+            try {
+                const res = await fetch(`/news?country=${country}&category=${category}`);  
+                if (!res.ok) {
+                    throw new Error(`Network response was not ok`);
+                }
+                const data = await res.json();  
+                newsList.innerHTML = '';  
+                if(data.articles.length === 0){
+                    newsList.innerHTML = `<p>No news found for ${data.category} in ${data.country}.</p>`;
+                }else{
+                    data.articles.forEach(article => {
+                    const div = document.createElement('div');
+                    div.className = 'news-item';
+                    const titleLink = document.createElement('a');
+                    titleLink.href = article.url;
+                    titleLink.target = '_blank';
+                    if (article.title === null){
+                       titleLink.textContent = '';
+                    }
+                    else{
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const country = document.getElementById('country').value;
-      const category = document.getElementById('category').value;
 
-      const res = await fetch(/news?country=${country}&category=${category});
-      const data = await res.json();
+                    titleLink.textContent = article.title;
+                    
+                    const title = document.createElement('h3');
+                    title.appendChild(titleLink);
 
-      newsList.innerHTML = '';
-      data.forEach(article => {
-        const div = document.createElement('div');
-        div.className = 'news-item';
-        div.innerHTML = `
-          <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-          <p>${article.description || ''}</p>
-        `;
-        newsList.appendChild(div);
-      });
-    });
-  </script>
-</body>
-</html>
+                    const description = document.createElement('p');
+                    description.textContent = article.description || '';
+                    div.appendChild(title);
+                    div.appendChild(description);
+                    newsList.appendChild(div);
+                    }
+                }); 
+                }
+            } catch (error) {
+                console.error('Error fetching or displaying news', error);
+                newsList.innerHTML = `<p>An error occurred while fetching the news: ${error.message}</p>`;
+            }
+        });
+    </script></body></html>
