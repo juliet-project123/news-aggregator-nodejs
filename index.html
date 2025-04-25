@@ -101,7 +101,7 @@
             const category = document.getElementById('category').value;           
             newsList.innerHTML = '<p>Loading...</p>';
             try {
-                const res = await fetch(`https://news-aggregator-nodejs.onrender.com/news?country=${country}&category=${category}`);  
+                const res = await fetch(`/news?country=${country}&category=${category}`);  
                 if (!res.ok) {
                     throw new Error(`Network response was not ok`);
                 }
